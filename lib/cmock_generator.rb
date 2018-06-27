@@ -169,7 +169,6 @@ class CMockGenerator
       file << "\n} CMOCK_#{function[:name]}_CALL_INSTANCE;\n\n"
     end
     file << "static struct #{@clean_mock_name}Instance\n{\n"
-	file << "  int IsInitialized;\n"
     if (functions.size == 0)
       file << "  unsigned char placeHolder;\n"
     end
@@ -200,7 +199,6 @@ class CMockGenerator
   def create_mock_init_function(file)
     file << "void #{@clean_mock_name}_Init(void)\n{\n"
     file << "  #{@clean_mock_name}_Destroy();\n"
-	file << "  Mock.IsInitialized = 1;\n"
     file << "}\n\n"
   end
 
@@ -240,7 +238,7 @@ class CMockGenerator
     file << "#{function_mod_and_rettype} #{function[:name]}(#{args_string})\n"
     file << "{\n"
     file << "  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;\n"
-	file << "  CMOCK_#{function[:name]}_CALL_INSTANCE* cmock_call_instance;\n"
+    file << "  CMOCK_#{function[:name]}_CALL_INSTANCE* cmock_call_instance;\n"
     file << "  UNITY_SET_DETAIL(CMockString_#{function[:name]});\n"
     file << "  cmock_call_instance = (CMOCK_#{function[:name]}_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.#{function[:name]}_CallInstance);\n"
     file << "  Mock.#{function[:name]}_CallInstance = CMock_Guts_MemNext(Mock.#{function[:name]}_CallInstance);\n"
