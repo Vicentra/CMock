@@ -169,7 +169,6 @@ class CMockGenerator
       file << "\n} CMOCK_#{function[:name]}_CALL_INSTANCE;\n\n"
     end
     file << "static struct #{@clean_mock_name}Instance\n{\n"
-	file << "  int IsInitialized;\n"
     if (functions.size == 0)
       file << "  unsigned char placeHolder;\n"
     end
@@ -200,7 +199,6 @@ class CMockGenerator
   def create_mock_init_function(file)
     file << "void #{@clean_mock_name}_Init(void)\n{\n"
     file << "  #{@clean_mock_name}_Destroy();\n"
-	file << "  Mock.IsInitialized = 1;\n"
     file << "}\n\n"
   end
 

@@ -44,7 +44,6 @@ class CMockGeneratorPluginExpectAnyArgs
     else
       lines << "void #{function[:name]}_CMockExpectAnyArgsAndReturn(UNITY_LINE_TYPE cmock_line, #{function[:return][:str]})\n{\n"
     end
-	lines << "  UNITY_TEST_ASSERT(Mock.IsInitialized, cmock_line, \" #{function[:name]}: Mock is not initialized\");\n"
     lines << @utils.code_add_base_expectation(function[:name], true)
     unless (function[:return][:void?])
       lines << "  cmock_call_instance->ReturnVal = cmock_to_return;\n"
