@@ -29,7 +29,7 @@ class CMockGeneratorPluginExpect
     lines << "  #{function[:return][:type]} ReturnVal;\n"  unless (function[:return][:void?])
     lines << "  int CallOrder;\n"                          if (@ordered)
     function[:args].each do |arg|
-      lines << "  #{arg[:type]} Expected_#{arg[:name]};\n"
+      lines << "  #{get_type(arg)} Expected_#{arg[:name]}#{get_array_type(arg)};\n"
     end
     lines
   end
@@ -102,4 +102,19 @@ class CMockGeneratorPluginExpect
     "  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.#{func_name}_CallInstance, cmock_line, CMockStringCalledLess);\n"
   end
 
+  def get_type(arg)
+    if !arg[:arrayType].nil? and arg[:type].include?('*')
+        return arg[:type].clone.insert(-2, '(')
+    else
+        return arg[:type]
+    end
+  end
+  
+  def get_array_type(arg)
+    if !arg[:arrayType].nil? and arg[:type].include?('*')
+        return ')' + arg[:arrayType]
+    else
+        return arg[:arrayType]
+    end
+  end
 end

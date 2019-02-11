@@ -96,7 +96,7 @@ class CMockGenerator
     file << "#ifndef _#{define_name}_H\n"
     file << "#define _#{define_name}_H\n\n"
     @includes_h_pre_orig_header.each {|inc| file << "#include #{inc}\n"}
-    file << @config.orig_header_include_fmt.gsub(/%s/, "#{orig_filename}") + "\n"
+    file << @config.orig_header_include_fmt.gsub(/%s/, "#{orig_filename.gsub(/[\\]/,'/')}") + "\n"
     @includes_h_post_orig_header.each {|inc| file << "#include #{inc}\n"}
     plugin_includes = @plugins.run(:include_files)
     file << plugin_includes if (!plugin_includes.empty?)
@@ -147,7 +147,7 @@ class CMockGenerator
     file << "#include \"#{@framework}.h\"\n"
     file << "#include \"cmock.h\"\n"
     @includes_c_pre_header.each {|inc| file << "#include #{inc}\n"}
-    file << "#include \"#{header_file}\"\n"
+    file << "#include \"#{header_file.gsub(/[\\]/,'/')}\"\n"
     @includes_c_post_header.each {|inc| file << "#include #{inc}\n"}
     file << "\n"
     strs = []
