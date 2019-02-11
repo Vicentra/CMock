@@ -149,7 +149,11 @@ class CMockHeaderParser
     arg.gsub!(/\*(\w)/,'* \1') # pull asterisks away from following word
     arg_array = arg.split
     arg_info = divine_ptr_and_const(arg)
-    arg_info[:name] = arg_array[-1]
+    name = arg_array[-1]
+    if name.include? '['
+        arg_info[:arrayType] = '['+name.split('[').last.split(']').first+']';
+    end
+    arg_info[:name] = name.gsub(/\).*/,'')
 
     attributes = arg.include?('*') ? @c_attr_noconst : @c_attributes
     attr_array = []
@@ -171,7 +175,8 @@ class CMockHeaderParser
     end
 
     arg_info[:modifier] = attr_array.join(' ')
-    arg_info[:type] = type_array.join(' ').gsub(/\s+\*/,'*') # remove space before asterisks
+    type = type_array.join(' ').gsub(/\s+\*/,'*') # remove space before asterisks
+    arg_info[:type] = type.gsub(/[\(]/,'') # remove everything after a (
     return arg_info
   end
 

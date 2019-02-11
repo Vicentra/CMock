@@ -12,7 +12,7 @@ class CMockGeneratorPluginReturnThruPtr
     function[:args].each do |arg|
       if (@utils.ptr_or_str?(arg[:type]) and not arg[:const?])
         lines << "  int ReturnThruPtr_#{arg[:name]}_Used;\n"
-        lines << "  #{arg[:type]} ReturnThruPtr_#{arg[:name]}_Val;\n"
+        lines << "  #{get_type(arg)} ReturnThruPtr_#{arg[:name]}_Val#{get_array_type(arg)};\n"
         lines << "  int ReturnThruPtr_#{arg[:name]}_Size;\n"
       end
     end
@@ -29,7 +29,7 @@ class CMockGeneratorPluginReturnThruPtr
         lines << " #{function[:name]}_CMockReturnMemThruPtr_#{arg[:name]}(__LINE__, #{arg[:name]}, (int)(cmock_len * (int)sizeof(*#{arg[:name]})))\n"
         lines << "#define #{function[:name]}_ReturnMemThruPtr_#{arg[:name]}(#{arg[:name]}, cmock_size)"
         lines << " #{function[:name]}_CMockReturnMemThruPtr_#{arg[:name]}(__LINE__, #{arg[:name]}, cmock_size)\n"
-        lines << "void #{function[:name]}_CMockReturnMemThruPtr_#{arg[:name]}(UNITY_LINE_TYPE cmock_line, #{arg[:type]} #{arg[:name]}, int cmock_size);\n"
+        lines << "void #{function[:name]}_CMockReturnMemThruPtr_#{arg[:name]}(UNITY_LINE_TYPE cmock_line, #{get_type(arg)} #{arg[:name]}#{get_array_type(arg)}, int cmock_size);\n"
       end
     end
     lines
@@ -41,7 +41,7 @@ class CMockGeneratorPluginReturnThruPtr
     function[:args].each do |arg|
       arg_name = arg[:name]
       if (@utils.ptr_or_str?(arg[:type]) and not arg[:const?])
-        lines << "void #{func_name}_CMockReturnMemThruPtr_#{arg_name}(UNITY_LINE_TYPE cmock_line, #{arg[:type]} #{arg_name}, int cmock_size)\n"
+        lines << "void #{func_name}_CMockReturnMemThruPtr_#{arg_name}(UNITY_LINE_TYPE cmock_line, #{get_type(arg)} #{arg_name}#{get_array_type(arg)}, int cmock_size)\n"
         lines << "{\n"
         lines << "  CMOCK_#{func_name}_CALL_INSTANCE* cmock_call_instance = " +
           "(CMOCK_#{func_name}_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.#{func_name}_CallInstance));\n"
@@ -69,5 +69,21 @@ class CMockGeneratorPluginReturnThruPtr
       end
     end
     lines
+  end
+
+  def get_type(arg)
+    if !arg[:arrayType].nil? and arg[:type].include?('*')
+        return arg[:type].clone.insert(-2, '(')
+    else
+        return arg[:type]
+    end
+  end
+
+  def get_array_type(arg)
+    if !arg[:arrayType].nil? and arg[:type].include?('*')
+        return ')' + arg[:arrayType]
+    else
+        return arg[:arrayType]
+    end
   end
 end
